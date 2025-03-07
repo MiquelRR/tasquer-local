@@ -10,7 +10,7 @@
     <string name="invalid_username">Nom d\'usuari invàlid</string>
     <string name="invalid_password">La password deu de tindre més de 6 caracters</string>
     <string name="login_failed">Impossible autenticar</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="tasks_for_user">%d tasques</string>
     <string name="hello_blank_fragment">Masa per la carabassa</string>
     <string name="logout">LogOut</string>
     <string name="task_list">Tasques</string>
@@ -28,4 +28,5 @@
     <string name="tf_hint_link">Link</string>
     <string name="tf_hint_time">temps (minuts)</string>
     <string name="dd_mm_aa">dd/mm/aa</string>
+    <string name="time_error">El temps ha de ser un numero</string>
 </resources>

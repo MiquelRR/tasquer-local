@@ -34,10 +34,10 @@ data class TaskItem(
     var isDone: Boolean? = false,
     var duration: Int? = null,
     @ColumnInfo(index = true)
-    var userId: String? = null,
+    var userId: Int = 0,
     var email: String? = null,
     var link: String? = null
 ) : Serializable {
     // No-argument constructor (required by Firestore)
-    constructor() : this(null, null,null, null, null, null, null, null)
+    constructor() : this(null, null,null, null, null, 0, null, null)
 }

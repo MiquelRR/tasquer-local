@@ -20,6 +20,8 @@ interface UserDao{
 
 @Dao
 interface TaskDao{
+    @Query("SELECT COUNT(*) FROM task_item WHERE userId = :email")
+    suspend fun getAmountTaskOfUserEmail(email: String): Int
     @Query("SELECT * FROM task_item WHERE userId = :userId")
     suspend fun getTasksByUserId(userId: String): List<TaskItem>
     @Insert

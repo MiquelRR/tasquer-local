@@ -1,59 +1,127 @@
 package com.miquel.tasquerviews
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.miquel.tasquerviews.databinding.FragmentAddBinding
+import com.miquel.tasquerviews.repository.TaskItem
+import com.miquel.tasquerviews.repository.TasquerApplication
+import com.miquel.tasquerviews.repository.User
+import kotlinx.coroutines.launch
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [AddFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class AddFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var binding: FragmentAddBinding
+    val args: HomeFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        if (activity is MainActivity.FragmentCallback) {
+            (activity as MainActivity.FragmentCallback).updateTopAppBar(args.username)
+        }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_add, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AddFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val date = binding.date
+        date.setOnClickListener {
+            showDatePicker(date)
+        }
+        val time: EditText = binding.time
+        var duration: Int = 0
+        var timeIsNumber: Boolean = true
+        time.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+                //nothing to do
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                try {
+                    duration = s.toString().toInt()
+                    time.error = null
+                    timeIsNumber = true
+                } catch (e: NumberFormatException) {
+                    time.error = R.string.time_error.toString()
+                    timeIsNumber = false
                 }
             }
+
+            override fun afterTextChanged(s: Editable?) {
+                //nothing to do
+            }
+        })
+
+
+        val button = binding.addTaskButton
+        button.setOnClickListener {
+            val description = binding.description.text.toString()
+            val link = binding.link.text.toString()
+            val date: Date = DateFormat.getDateInstance().parse(binding.date.text.toString())
+            val isDone: Boolean = false
+            val email = args.username
+            lifecycleScope.launch {
+                val user: User? = TasquerApplication.database.userDao().getUserByEmail(email)
+                if (user != null) {
+                    val taskItem: TaskItem = TaskItem(
+                        id = null,
+                        date = date,
+                        description = description,
+                        isDone = isDone,
+                        duration = duration,
+                        userId = user.userId,
+                        email = email,
+                        link = link
+                    )
+                    TasquerApplication.database.taskDao().addTask(taskItem)
+
+                } else {
+                    Log.d("AddFragment", "User not found")
+                }
+            }
+
+        }
+    }
+
+    private fun showDatePicker(date: EditText) {
+        val datePicker = MaterialDatePicker.Builder.datePicker().build()
+        datePicker.addOnPositiveButtonClickListener { selection ->
+            val selectedDate = Date(selection)
+            val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val formattedDate = formatter.format(selectedDate)
+            Log.d("SELECTED_DATE", formattedDate)
+            date.setText(formattedDate)
+        }
+        datePicker.show(parentFragmentManager, "DatePicker")
     }
 }
+
+
+

@@ -17,6 +17,9 @@ import com.miquel.tasquerviews.MainActivity.FragmentCallback
 import com.miquel.tasquerviews.databinding.ActivityMainBinding
 import kotlin.math.log
 import androidx.core.content.edit
+import androidx.lifecycle.lifecycleScope
+import com.miquel.tasquerviews.repository.TasquerApplication
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), FragmentCallback {
     private lateinit var binding: ActivityMainBinding
@@ -25,7 +28,7 @@ class MainActivity : AppCompatActivity(), FragmentCallback {
     private lateinit var bottomAppBar: BottomNavigationView
 
     interface FragmentCallback {
-        fun updateTopAppBar(title: String, subtitle: String)
+        fun updateTopAppBar(title: String)
         fun updateSharedPreferences(email: String)
     }
 
@@ -80,9 +83,12 @@ class MainActivity : AppCompatActivity(), FragmentCallback {
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
-    override fun updateTopAppBar(title: String, subtitle: String) {
+    override fun updateTopAppBar(title: String) {
         topAppBar.title = title
-        topAppBar.subtitle = subtitle
+        lifecycleScope.launch{
+            val tasksForUser:Int= TasquerApplication.database.taskDao().getAmountTaskOfUserEmail(title)
+            topAppBar.subtitle = getString(R.string.tasks_for_user,tasksForUser)
+        }
     }
 
     override fun updateSharedPreferences(email: String) {
