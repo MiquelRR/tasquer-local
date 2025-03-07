@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="red">#FF0000</color>
+    <color name="blue">#0127FD</color>
+    <color name="green">#02F80C</color>
+    <color name="pink">#FFEFB8C8</color>
+    <color name="lightGray">#FFC4C4C4</color>
+    <color name="darkGray">#FF808080</color>
+    <color name="unSelectField">#FFB0B0B0</color>
+    <color name="selectedField">#FFE1E1E1</color>
+
+
+</resources>

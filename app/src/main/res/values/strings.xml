@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">TasquerViews</string>
+    <!-- Strings related to login -->
+    <string name="prompt_username">Usuari</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">LogIn / Nou usuari</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">Benvingut</string>
+    <string name="invalid_username">Nom d\'usuari invàlid</string>
+    <string name="invalid_password">La password deu de tindre més de 6 caracters</string>
+    <string name="login_failed">Impossible autenticar</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Masa per la carabassa</string>
+    <string name="logout">LogOut</string>
+    <string name="task_list">Tasques</string>
+    <string name="add_task">Afegir</string>
+    <string name="docs_button_text">Documents</string>
+    <string name="description_fake">Esta es la descripció de la tarea</string>
+    <string name="time_fake">Estimat: 10 min</string>
+    <string name="done_text">Pendent?</string>
+    <string name="date_fake">Sense data</string>
+    <string name="mail_error">No es un email vàlid</string>
+    <string name="pass_error">Contra-Sènia invàlida</string>
+    <string name="keep_connected_radio_button_legend">Quedar-se conectat</string>
+    <string name="add_task_button_text">Afegir tasca</string>
+    <string name="tf_hint_description">Descripció</string>
+    <string name="tf_hint_link">Link</string>
+    <string name="tf_hint_time">temps (minuts)</string>
+    <string name="dd_mm_aa">dd/mm/aa</string>
+</resources>
