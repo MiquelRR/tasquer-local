@@ -29,4 +29,5 @@
     <string name="tf_hint_time">temps (minuts)</string>
     <string name="dd_mm_aa">dd/mm/aa</string>
     <string name="time_error">El temps ha de ser un numero</string>
+    <string name="zero_task_message">no tens tasques, pots afegir!</string>
 </resources>

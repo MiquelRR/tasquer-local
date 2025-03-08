@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_app_bar_menu">
     <item
-        android:id="@+id/profileScreen"
+        android:id="@+id/loginFragment2"
         android:icon="@drawable/ic_profile"
         android:title="@string/logout"
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/homeFragment"
+        android:id="@+id/homeFragment2"
         android:icon="@drawable/ic_home"
         android:title="@string/task_list"
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/addScreen"
+        android:id="@+id/addFragment2"
         android:icon="@drawable/ic_add"
         android:title="@string/add_task"
         app:showAsAction="ifRoom" />

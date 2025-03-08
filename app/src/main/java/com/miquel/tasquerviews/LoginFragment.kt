@@ -49,7 +49,7 @@ class LoginFragment : Fragment() {
                             }
                         }
                         findNavController().navigate(
-                            LoginFragmentDirections.actionLoginFragmentToHomeFragment(email)
+                            LoginFragmentDirections.actionLoginFragment2ToHomeFragment2(email)
                         )
                     }
                     if (user == null) {//create user
@@ -61,7 +61,7 @@ class LoginFragment : Fragment() {
                             }
                         }
                         findNavController().navigate(
-                            LoginFragmentDirections.actionLoginFragmentToHomeFragment(email)
+                            LoginFragmentDirections.actionLoginFragment2ToHomeFragment2(email)
                         )
 
                     }

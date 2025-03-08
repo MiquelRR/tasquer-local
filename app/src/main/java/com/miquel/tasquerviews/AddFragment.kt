@@ -31,6 +31,7 @@ class AddFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = FragmentAddBinding.inflate(layoutInflater)
     }
 
     override fun onCreateView(
@@ -86,7 +87,7 @@ class AddFragment : Fragment() {
             val link = binding.link.text.toString()
             val date: Date = DateFormat.getDateInstance().parse(binding.date.text.toString())
             val isDone: Boolean = false
-            val email = args.username
+            val email: String = args.username?:""
             lifecycleScope.launch {
                 val user: User? = TasquerApplication.database.userDao().getUserByEmail(email)
                 if (user != null) {
