@@ -26,23 +26,28 @@ import java.util.Locale
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class AddFragment : Fragment() {
-    private lateinit var binding: FragmentAddBinding
+    private var _binding: FragmentAddBinding? = null
+    private val binding get() = _binding!!
     val args: HomeFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = FragmentAddBinding.inflate(layoutInflater)
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _binding = FragmentAddBinding.inflate(inflater, container, false)
         if (activity is MainActivity.FragmentCallback) {
+            Log.d("AddFragment", "update top app bar 1")
             (activity as MainActivity.FragmentCallback).updateTopAppBar(args.username)
+        } else  {
+            Log.d("AddFragment", "activity is null 1")
         }
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,11 +88,23 @@ class AddFragment : Fragment() {
 
         val button = binding.addTaskButton
         button.setOnClickListener {
-            val description = binding.description.text.toString()
-            val link = binding.link.text.toString()
-            val date: Date = DateFormat.getDateInstance().parse(binding.date.text.toString())
+            Log.d("AddFragment", "pressed")
+            val desField= binding.description
+            val description = desField.text.toString()
+            val linkField = binding.link
+            val link = linkField.text.toString()
+            val dateField = binding.date
+            var date: Date? = null
+            try {
+                date = DateFormat.getDateInstance().parse(dateField.text.toString())
+            } catch (e: Exception) {
+                Log.d("AddFragment", "Error parsing date: ${e.message}")
+                date = null
+            }
             val isDone: Boolean = false
             val email: String = args.username?:""
+            Log.d("AddFragment", "email: $email -> $description")
+
             lifecycleScope.launch {
                 val user: User? = TasquerApplication.database.userDao().getUserByEmail(email)
                 if (user != null) {
@@ -102,10 +119,23 @@ class AddFragment : Fragment() {
                         link = link
                     )
                     TasquerApplication.database.taskDao().addTask(taskItem)
-
+                    Log.d("AddFragment", "Task added")
+                    if (activity is MainActivity.FragmentCallback) {
+                        Log.d("AddFragment", "update top app bar 2")
+                        (activity as MainActivity.FragmentCallback).updateTopAppBar(email)
+                    } else  {
+                        Log.d("AddFragment", "activity is null 2 ")
+                    }
                 } else {
                     Log.d("AddFragment", "User not found")
                 }
+                time.text.clear()
+                dateField.text.clear()
+                linkField.text.clear()
+                time.error = null
+                desField.text.clear()
+
+
             }
 
         }
@@ -122,6 +152,12 @@ class AddFragment : Fragment() {
         }
         datePicker.show(parentFragmentManager, "DatePicker")
     }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Release the binding in onDestroyView
+    }
+
+
 }
 
 

@@ -15,13 +15,17 @@ class HomeFragment : Fragment() {
     val args: HomeFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("HomeFragment", "onCreate")
         super.onCreate(savedInstanceState)
+
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("HomeFragment", "onCreateView")
         // Inflate the layout for this fragment
         binding= FragmentHomeBinding.inflate(inflater, container, false)
         val username = args.username

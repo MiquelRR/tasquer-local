@@ -48,9 +48,8 @@ class LoginFragment : Fragment() {
                                 (activity as MainActivity.FragmentCallback).updateSharedPreferences(email)
                             }
                         }
-                        findNavController().navigate(
-                            LoginFragmentDirections.actionLoginFragment2ToHomeFragment2(email)
-                        )
+                        Log.d("LoginFragment", "navigate login")
+                        findNavController().navigate(R.id.homeFragment2,HomeFragmentArgs(email).toBundle())
                     }
                     if (user == null) {//create user
                         user = User(email = email, password = password)
@@ -60,8 +59,8 @@ class LoginFragment : Fragment() {
                                 (activity as MainActivity.FragmentCallback).updateSharedPreferences(email)
                             }
                         }
-                        findNavController().navigate(
-                            LoginFragmentDirections.actionLoginFragment2ToHomeFragment2(email)
+                        findNavController().navigate( //guide to new user to add the first task
+                            LoginFragmentDirections.actionLoginFragment2ToAddFragment2(email)
                         )
 
                     }

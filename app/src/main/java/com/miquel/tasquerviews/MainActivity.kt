@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
         fun updateSharedPreferences(email: String)
     }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -48,6 +50,7 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         val preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         val loggedUserMail = preferences.getString("remembered_user_mail", "")
+        Log.d("Preferences", "onCreate read $loggedUserMail")
 
         val navHostFragment =supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         navController = navHostFragment.navController
@@ -55,10 +58,14 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
         bottomAppBar = binding.bottomNavigationView
         updateTopAppBar("JonDoe")
         bottomAppBar.setOnItemSelectedListener(this)
-        if (loggedUserMail != "") { //User exists ->Navigate to home
+        //setSupportActionBar()
+        //setupActionBarWithNavController(navController)
+
+        if (loggedUserMail != "") { //User exists and remembered->Navigate to home
             val action = LoginFragmentDirections.actionLoginFragment2ToHomeFragment2(loggedUserMail!!)
             //vall action = LoginFragmentDirections.actionLoginFragmentToAddFragment(loggedUserMail!!)
             Log.d("NAV", ">${action.toString()}")
+            navController.currentDestination?.id =R.id.homeFragment2
             navController.navigate(action)
             //navController.navigate(R.id.homeFragment,HomeFragmentArgs(loggedUserMail).toBundle())
             Log.d("NAV", "DONEDONE")
@@ -66,8 +73,8 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
             // Hide the TopAppBar and BottomAppBar when in the LoginFragment
         navController.addOnDestinationChangedListener { _, destination, _ ->
             Log.d("NAV", "******${destination.toString()}")
-            when (destination.id) {
-                R.id.loginFragment2 -> {
+            when (destination.label) {
+                "fragment_login" -> {
                     Log.d("NAV", "LoginFragment")
                     //supportActionBar?.hide()// Hide the toolbar
                     topAppBar.visibility = View.GONE
@@ -106,6 +113,7 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
         topAppBar.title = showTitle
         lifecycleScope.launch{
             val tasksForUser:Int= TasquerApplication.database.taskDao().getAmountTaskOfUserEmail(showTitle)
+            Log.d("LoginFragment", "updateTopAppBar $tasksForUser")
             val prompt = if (tasksForUser==0) getString(R.string.zero_task_message) else getString(R.string.tasks_for_user,tasksForUser)
             topAppBar.subtitle = prompt
         }
@@ -114,6 +122,7 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
     override fun updateSharedPreferences(email: String) {
         val preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         preferences.edit() { putString("remembered_user_mail", email) }
+        Log.d("Preferences", "updateSharedPreferences $email")
 
     }
 
@@ -144,17 +153,23 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
                return true
            }
            R.id.loginFragment2 -> { //We dont care if we are in login, we go to login
-               Log.d("BottomBar", "LoginFragment")
-               updateTopAppBar("")
-               loggededUserMail = ""
-               val preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
-               preferences.edit() { putString("remembered_user_mail", "") }
-               val action = HomeFragmentDirections.actionHomeFragment2ToLoginFragment2()
-               navController.navigate(action)
+               if(navController.currentDestination?.id != R.id.loginFragment2) {
+                   Log.d("BottomBar", "LoginFragment")
+                   updateTopAppBar("")
+                   loggededUserMail = ""
+                   val preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+                   preferences.edit() { putString("remembered_user_mail", "") }
+                   Log.d("Preferences", "updateSharedPreferences EMPTY")
+                   val action = HomeFragmentDirections.actionHomeFragment2ToLoginFragment2()
+                   //navController.navigate(action)
+                   navController.navigate(R.id.loginFragment2)
+               }
+               Log.d("BottomBar", "LoginFragment->LoginFragment")
                return true
            }
        }
        return false
     }
+
 }
 
