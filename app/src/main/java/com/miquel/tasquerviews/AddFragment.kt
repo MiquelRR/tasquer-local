@@ -17,7 +17,6 @@ import com.miquel.tasquerviews.repository.TaskItem
 import com.miquel.tasquerviews.repository.TasquerApplication
 import com.miquel.tasquerviews.repository.User
 import kotlinx.coroutines.launch
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -95,15 +94,16 @@ class AddFragment : Fragment() {
             val link = linkField.text.toString()
             val dateField = binding.date
             var date: Date? = null
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             try {
-                date = DateFormat.getDateInstance().parse(dateField.text.toString())
+                date = dateFormat.parse(dateField.text.toString())
             } catch (e: Exception) {
                 Log.d("AddFragment", "Error parsing date: ${e.message}")
                 date = null
             }
             val isDone: Boolean = false
             val email: String = args.username?:""
-            Log.d("AddFragment", "email: $email -> $description")
+            Log.d("AddFragment", "email: $email -> $description ${date.toString()}")
 
             lifecycleScope.launch {
                 val user: User? = TasquerApplication.database.userDao().getUserByEmail(email)

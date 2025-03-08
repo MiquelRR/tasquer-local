@@ -16,7 +16,7 @@
         <!-- Date and State Row -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="32dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -26,7 +26,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/date_fake"
-                android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -35,14 +34,13 @@
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="?android:attr/listDivider" />
+                android:background="@android:color/transparent" />
 
-            <RadioButton
+            <Switch
                 android:id="@+id/doneRadioButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/done_text"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
         </LinearLayout>
 
@@ -69,11 +67,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/time_fake"
-                android:textColor="@color/white"
                 android:textSize="14sp" />
-            <Space
-                android:layout_width="48dp"
-                android:layout_height="wrap_content"/>
+
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent" />
+
             <Button
                 android:id="@+id/taskLinkButton"
                 android:layout_width="0dp"

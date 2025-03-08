@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao{
@@ -24,6 +25,8 @@ interface TaskDao{
     suspend fun getAmountTaskOfUserEmail(email: String): Int
     @Query("SELECT * FROM task_item WHERE userId = :userId")
     suspend fun getTasksByUserId(userId: String): List<TaskItem>
+    @Query("SELECT * FROM task_item WHERE email = :email")
+    suspend fun getTaskByUserEmail(email: String): List<TaskItem>
     @Insert
     suspend fun addTask(task: TaskItem): Long
     @Update
