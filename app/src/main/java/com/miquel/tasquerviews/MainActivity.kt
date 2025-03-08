@@ -65,10 +65,11 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
             val action = LoginFragmentDirections.actionLoginFragment2ToHomeFragment2(loggedUserMail!!)
             //vall action = LoginFragmentDirections.actionLoginFragmentToAddFragment(loggedUserMail!!)
             Log.d("NAV", ">${action.toString()}")
-            navController.currentDestination?.id =R.id.homeFragment2
-            navController.navigate(action)
-            //navController.navigate(R.id.homeFragment,HomeFragmentArgs(loggedUserMail).toBundle())
+            //navController.currentDestination?.id =R.id.homeFragment2
+            //navController.navigate(action)
+            navController.navigate(R.id.homeFragment2,HomeFragmentArgs(loggedUserMail).toBundle())
             Log.d("NAV", "DONEDONE")
+            Log.d("Preferences", "$loggedUserMail entra o que?")
         }
             // Hide the TopAppBar and BottomAppBar when in the LoginFragment
         navController.addOnDestinationChangedListener { _, destination, _ ->

@@ -9,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.miquel.tasquerviews.databinding.FragmentLoginBinding
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.miquel.tasquerviews.repository.TasksDatabase
 import com.miquel.tasquerviews.repository.TasquerApplication
 import com.miquel.tasquerviews.repository.User
@@ -34,7 +36,19 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
+
         binding = FragmentLoginBinding.inflate(inflater, container, false)
+
+        val placeholder = R.drawable.tasky_unfocussed
+        val imageUrl = "https://drive.google.com/uc?export=view&id=1JTZh2pXBot1ksYpFNkaWuLEivfRFK8qn"
+
+
+        Glide.with(this)
+            .load(imageUrl)
+            .placeholder(placeholder)
+            .error(placeholder)
+            .into(binding.imageView)
+
         Log.d("LoginFragment", "created")
         binding.login.setOnClickListener {
             val (email, password) = getBothFromTextEdit(binding)
