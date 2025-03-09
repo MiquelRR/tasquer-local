@@ -1,7 +1,9 @@
 package com.miquel.tasquerviews
 
 import android.content.pm.ActivityInfo
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -31,11 +33,13 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
     private lateinit var navController: NavController
     private lateinit var topAppBar: MaterialToolbar
     private lateinit var bottomAppBar: BottomNavigationView
-    private var loggededUserMail: String = ""
+    private var mediaPlayer: MediaPlayer? = null
+    private var lastMail:String =""
 
     interface FragmentCallback {
         fun updateTopAppBar(title: String?)
         fun updateSharedPreferences(email: String)
+        fun manageMediaPlayer(position: Int)
     }
 
 
@@ -46,55 +50,45 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
 
         enableEdgeToEdge()
         setContentView(binding.root)
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer.create(this, R.raw.es_una_lata)
+            mediaPlayer?.isLooping = true
+        }
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         val preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         val loggedUserMail = preferences.getString("remembered_user_mail", "")
-        Log.d("Preferences", "onCreate read $loggedUserMail")
 
         val navHostFragment =supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         navController = navHostFragment.navController
         topAppBar = binding.topAppBar
         bottomAppBar = binding.bottomNavigationView
-        updateTopAppBar("JonDoe")
         bottomAppBar.setOnItemSelectedListener(this)
-        //setSupportActionBar()
-        //setupActionBarWithNavController(navController)
 
         if (loggedUserMail != "") { //User exists and remembered->Navigate to home
-            val action = LoginFragmentDirections.actionLoginFragment2ToHomeFragment2(loggedUserMail!!)
-            //vall action = LoginFragmentDirections.actionLoginFragmentToAddFragment(loggedUserMail!!)
-            Log.d("NAV", ">${action.toString()}")
-            //navController.currentDestination?.id =R.id.homeFragment2
-            //navController.navigate(action)
-            navController.navigate(R.id.homeFragment2,HomeFragmentArgs(loggedUserMail).toBundle())
-            Log.d("NAV", "DONEDONE")
-            Log.d("Preferences", "$loggedUserMail entra o que?")
+            lifecycleScope.launch {
+                val user = TasquerApplication.database.userDao().getUserByEmail(loggedUserMail!!)
+                if (user != null) {
+                    updateTopAppBar(loggedUserMail)
+                    navController.navigate(R.id.homeFragment2, HomeFragmentArgs(loggedUserMail).toBundle())
+                    manageMediaPlayer(user.songPosition)
+                }
+            }
+            navController.navigate(R.id.homeFragment2,HomeFragmentArgs(loggedUserMail!!).toBundle())
         }
             // Hide the TopAppBar and BottomAppBar when in the LoginFragment
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            Log.d("NAV", "******${destination.toString()}")
             when (destination.label) {
                 "fragment_login" -> {
-                    Log.d("NAV", "LoginFragment")
-                    //supportActionBar?.hide()// Hide the toolbar
                     topAppBar.visibility = View.GONE
                     bottomAppBar.visibility = View.GONE
                 }
                 else -> {
-
-                    Log.d("NAV", "-------------${destination.toString()}")
-                    //supportActionBar?.show()//Show the toolbar
                     topAppBar.visibility = View.VISIBLE
-                    Log.d("NAV", "1111111111")
                     bottomAppBar.visibility = View.VISIBLE
-                    Log.d("NAV", "2222222222")
                 }
             }
         }
-        //bottomAppBar.setupWithNavController(navController)
-
-
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -105,16 +99,15 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        Log.d("NAV", "onSupportNavigateUp")
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
     override fun updateTopAppBar(title: String?) {
         val showTitle = if (title=="" || title==null) "none passed" else title
+        lastMail = if (title=="" || title==null) lastMail else title
 
         topAppBar.title = showTitle
         lifecycleScope.launch{
             val tasksForUser:Int= TasquerApplication.database.taskDao().getAmountTaskOfUserEmail(showTitle)
-            Log.d("LoginFragment", "updateTopAppBar $tasksForUser")
             val prompt = if (tasksForUser==0) getString(R.string.zero_task_message) else getString(R.string.tasks_for_user,tasksForUser)
             topAppBar.subtitle = prompt
         }
@@ -123,31 +116,38 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
     override fun updateSharedPreferences(email: String) {
         val preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         preferences.edit() { putString("remembered_user_mail", email) }
-        Log.d("Preferences", "updateSharedPreferences $email")
+    }
 
+    override fun manageMediaPlayer(position: Int) {
+        if (mediaPlayer != null) {
+            if (mediaPlayer!!.isPlaying) {
+                mediaPlayer!!.pause()
+            }
+            if(position >= 0 ) {
+                mediaPlayer!!.seekTo(position)
+                mediaPlayer!!.start()
+            } else {
+                lifecycleScope.launch {
+                    Log.d("MUSIC", "manageMediaPlayer: $lastMail -> $position")
+                    TasquerApplication.database.userDao().updateSongPositionToUserEmail(lastMail, mediaPlayer!!.currentPosition)
+                }
+            }
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.d("BottomBar", "onNavigationItemSelected ${item.itemId}")
        when(item.itemId){
            R.id.homeFragment2 -> {
-               Log.d("BottomBar", "HomeFragment")
-                if(navController.currentDestination?.id != R.id.homeFragment2) {
-                    Log.d("BottomBar", ">HomeFragment")
-                    val action = AddFragmentDirections.actionAddFragment2ToHomeFragment2(topAppBar.title.toString())
 
-                    //navController.navigate(action)
+                if(navController.currentDestination?.id != R.id.homeFragment2) {
+
                     navController.navigate(R.id.homeFragment2, HomeFragmentArgs(topAppBar.title.toString()).toBundle())
                     return true
                 }
                 return true
            }
            R.id.addFragment2 -> {
-               Log.d("BottomBar", "AddFragment")
                if(navController.currentDestination?.id != R.id.addFragment2) {
-                    Log.d("BottomBar", ">AddFragment")
-                    val action = LoginFragmentDirections.actionLoginFragment2ToAddFragment2(topAppBar.title.toString())
-                    //navController.navigate(action)
                     navController.navigate(R.id.addFragment2, AddFragmentArgs(topAppBar.title.toString()).toBundle())
                     return true
                }
@@ -155,21 +155,27 @@ class MainActivity : AppCompatActivity(), FragmentCallback, NavigationBarView. O
            }
            R.id.loginFragment2 -> { //We dont care if we are in login, we go to login
                if(navController.currentDestination?.id != R.id.loginFragment2) {
-                   Log.d("BottomBar", "LoginFragment")
                    updateTopAppBar("")
-                   loggededUserMail = ""
                    val preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
                    preferences.edit() { putString("remembered_user_mail", "") }
-                   Log.d("Preferences", "updateSharedPreferences EMPTY")
-                   val action = HomeFragmentDirections.actionHomeFragment2ToLoginFragment2()
-                   //navController.navigate(action)
                    navController.navigate(R.id.loginFragment2)
+                   manageMediaPlayer(-1)
+                   Log.d("MainActivity", "navigate to home music stop?")
                }
-               Log.d("BottomBar", "LoginFragment->LoginFragment")
                return true
            }
        }
        return false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (mediaPlayer != null) {
+            manageMediaPlayer(-1)
+            mediaPlayer!!.release()
+            mediaPlayer = null
+        }
+
     }
 
 }

@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.Flow
 interface UserDao{
     @Query("SELECT * FROM user WHERE email = :email")
     suspend fun getUserByEmail(email: String): User?
+    @Query("UPDATE user SET songPosition = :position WHERE userId = (SELECT userId FROM user ORDER BY userId DESC LIMIT 1)")
+    suspend fun updateSongPositionToLastUser(position: Int)
+    @Query("UPDATE user SET songPosition = :position WHERE email = :email")
+    suspend fun updateSongPositionToUserEmail(email: String, position: Int)
     @Insert
     suspend fun addUser(user: User)
     @Update

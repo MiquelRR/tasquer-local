@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlin.getValue
 
-
 class HomeFragment : Fragment() {
     private lateinit var taskItemsList: List<TaskItem>
     private var _binding: FragmentHomeBinding? = null
@@ -27,10 +26,7 @@ class HomeFragment : Fragment() {
     val args: HomeFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("HomeFragment", "onCreate")
         super.onCreate(savedInstanceState)
-
-
     }
 
     override fun onCreateView(
@@ -41,20 +37,15 @@ class HomeFragment : Fragment() {
         val view = binding.root
         Log.d("HomeFragment", "onCreateView")
         // Inflate the layout for this fragment
-        //binding= FragmentHomeBinding.inflate(inflater, container, false)
         val username = args.username
         if (activity is MainActivity.FragmentCallback) {
             (activity as MainActivity.FragmentCallback).updateTopAppBar(username)
         }
         loadTasks(username, binding)
-
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("HomeFragment", "onViewCreated")
-
-
     }
     private fun loadTasks(username: String, binding: FragmentHomeBinding) {
         CoroutineScope(Dispatchers.IO).launch{

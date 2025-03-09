@@ -62,7 +62,7 @@ class MyAdapter (
         fun bind(task: TaskItem) {
             binding.taskDescriptionTextView.text = task.description
             val formatter = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
-            var formattedDate:String ="Sene data"
+            var formattedDate:String = binding.root.context.getString(R.string.date_fake)
             if (task.date != null){
                 formattedDate = formatter.format(task.date as Date)
             }

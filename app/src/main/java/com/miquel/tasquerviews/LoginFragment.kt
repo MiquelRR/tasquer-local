@@ -17,9 +17,6 @@ import com.miquel.tasquerviews.repository.TasquerApplication
 import com.miquel.tasquerviews.repository.User
 import kotlinx.coroutines.launch
 
-
-
-
 class LoginFragment : Fragment() {
 
     private lateinit var binding: FragmentLoginBinding
@@ -29,19 +26,13 @@ class LoginFragment : Fragment() {
         super.onCreate(savedInstanceState)
     }
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-
         binding = FragmentLoginBinding.inflate(inflater, container, false)
-
         val placeholder = R.drawable.tasky_unfocussed
         val imageUrl = "https://drive.google.com/uc?export=view&id=1JTZh2pXBot1ksYpFNkaWuLEivfRFK8qn"
-
 
         Glide.with(this)
             .load(imageUrl)
@@ -49,7 +40,6 @@ class LoginFragment : Fragment() {
             .error(placeholder)
             .into(binding.imageView)
 
-        Log.d("LoginFragment", "created")
         binding.login.setOnClickListener {
             val (email, password) = getBothFromTextEdit(binding)
 
@@ -57,21 +47,23 @@ class LoginFragment : Fragment() {
                 lifecycleScope.launch {
                     user= TasquerApplication.database.userDao().getUserByEmail(email)
                     if (user != null && user!!.password == password) { //login ok
-                        if(binding.rememberCheck.isChecked){
-                            if (activity is MainActivity.FragmentCallback) {
+                        if (activity is MainActivity.FragmentCallback) {
+                            if(binding.rememberCheck.isChecked){
                                 (activity as MainActivity.FragmentCallback).updateSharedPreferences(email)
                             }
+                            (activity as MainActivity.FragmentCallback).manageMediaPlayer(user!!.songPosition)
                         }
-                        Log.d("LoginFragment", "navigate login")
                         findNavController().navigate(R.id.homeFragment2,HomeFragmentArgs(email).toBundle())
                     }
                     if (user == null) {//create user
-                        user = User(email = email, password = password)
+                        user = User(email = email, password = password, songPosition = 0)
                         TasquerApplication.database.userDao().addUser(user!!)
-                        if(binding.rememberCheck.isChecked){
-                            if (activity is MainActivity.FragmentCallback) {
+                        if (activity is MainActivity.FragmentCallback) {
+                            if(binding.rememberCheck.isChecked){
                                 (activity as MainActivity.FragmentCallback).updateSharedPreferences(email)
                             }
+                            (activity as MainActivity.FragmentCallback).updateTopAppBar(email)
+                            (activity as MainActivity.FragmentCallback).manageMediaPlayer(0)
                         }
                         findNavController().navigate( //guide to new user to add the first task
                             LoginFragmentDirections.actionLoginFragment2ToAddFragment2(email)
